@@ -1,7 +1,6 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-
 const app = express();
+const jwt = require('jsonwebtoken');
 
 app.get('/api', verifyToken, (req, res) => {
     res.json({
@@ -11,7 +10,6 @@ app.get('/api', verifyToken, (req, res) => {
 });
 
 app.post('/api/posts', verifyToken, (req, res) => {
-
     jwt.verify(req.token, 'secret_key', (err, authData) => {
         if(err) {
             res.sendStatus(403);
@@ -23,6 +21,45 @@ app.post('/api/posts', verifyToken, (req, res) => {
         }
     });
 });
+
+app.post('/api/login', (req, res) => {
+    // Mock user
+    const user = {
+        id: 1,
+        username: 'brad',
+        email: 'brad@gmail.com'
+    };
+
+    //jwt.sign({user}, 'secret_key', { expiresIn: '30m' }, (err, token) => {
+    jwt.sign({user}, 'secret_key', (err, token) => {
+        res.json({
+            token
+        });
+    });
+});
+
+// FORMAT OF TOKEN
+// Authorization: Bearer <access_token>
+// Verify Token
+function verifyToken(req, res, next) {
+    // Get auth header value
+    const bearerHeader = req.headers['authorization'];
+    // Check if bearer is undefined
+    if(typeof bearerHeader !== 'undefined') {
+        // Split at the space
+        const bearer = bearerHeader.split(' ');
+        // Get token from array
+        // Set the token
+        req.token = bearer[1];
+        // Next middleware
+        next();
+    } else {
+        // Forbidden
+        res.sendStatus(404);
+    }
+}
+
+app.listen(5000, () => console.log('Server started on port 5000'));
 
 // app.post('/api/posts', (req, res) => {
 //
@@ -48,45 +85,6 @@ app.post('/api/posts', verifyToken, (req, res) => {
 //     }
 // });
 
-app.post('/api/login', (req, res) => {
-    // Mock user
-    const user = {
-        id: 1,
-        username: 'brad',
-        email: 'brad@gmail.com'
-    };
-
-    //jwt.sign({user}, 'secret_key', { expiresIn: '30m' }, (err, token) => {
-    jwt.sign({user}, 'secret_key', (err, token) => {
-        res.json({
-            token
-        });
-    });
-});
-
-// FORMAT OF TOKEN
-// Authorization: Bearer <access_token>
-
-// Verify Token
-function verifyToken(req, res, next) {
-    // Get auth header value
-    const bearerHeader = req.headers['authorization'];
-    // Check if bearer is undefined
-    if(typeof bearerHeader !== 'undefined') {
-        // Split at the space
-        const bearer = bearerHeader.split(' ');
-        // Get token from array
-        // Set the token
-        req.token = bearer[1];
-        // Next middleware
-        next();
-    } else {
-        // Forbidden
-        res.sendStatus(404);
-    }
-}
-
-app.listen(5000, () => console.log('Server started on port 5000'));
 
 
 
