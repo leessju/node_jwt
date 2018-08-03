@@ -9,6 +9,13 @@ app.get('/api', verifyToken, (req, res) => {
     });
 });
 
+app.get('/api_test', (req, res) => {
+    res.json({
+        message: 'Welcome to the API Test',
+        headers: req.headers
+    });
+});
+
 app.post('/api/posts', verifyToken, (req, res) => {
     jwt.verify(req.token, 'secret_key', (err, authData) => {
         if(err) {
@@ -30,8 +37,8 @@ app.post('/api/login', (req, res) => {
         email: 'brad@gmail.com'
     };
 
-    //jwt.sign({user}, 'secret_key', { expiresIn: '30m' }, (err, token) => {
-    jwt.sign({user}, 'secret_key', (err, token) => {
+    //jwt.sign({user}, 'secret_key', (err, token) => {
+    jwt.sign({user}, 'secret_key', { expiresIn: '30m' }, (err, token) => {
         res.json({
             token
         });
